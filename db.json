@@ -1,0 +1,103 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "nombre": "Juan Pérez",
+      "email": "solicitante@test.com",
+      "password": "123456",
+      "rol": "SOLICITANTE"
+    },
+    {
+      "id": "2",
+      "nombre": "María García",
+      "email": "proveedor@test.com",
+      "password": "123456",
+      "rol": "PROVEEDOR_SERVICIO"
+    },
+    {
+      "id": "3",
+      "nombre": "Carlos López",
+      "email": "insumos@test.com",
+      "password": "123456",
+      "rol": "PROVEEDOR_INSUMOS"
+    }
+  ],
+  "services": [
+    {
+      "id": "1",
+      "solicitanteId": "1",
+      "titulo": "Limpieza de jardín y pileta",
+      "descripcion": "Necesito limpieza completa del jardín y mantenimiento de pileta de 8x4 metros",
+      "categoria": "jardineria",
+      "direccion": "Av. Libertador 1234",
+      "ciudad": "Buenos Aires",
+      "fechaPreferida": "2025-11-20T10:00:00.000Z",
+      "insumosRequeridos": [
+        {
+          "nombre": "Cloro",
+          "cantidad": 5,
+          "unidad": "kg"
+        },
+        {
+          "nombre": "Fertilizante",
+          "cantidad": 10,
+          "unidad": "kg"
+        }
+      ],
+      "estado": "PUBLICADO",
+      "createdAt": "2025-11-10T08:00:00.000Z"
+    }
+  ],
+  "quotes": [
+    {
+      "id": "1",
+      "serviceId": "1",
+      "proveedorId": "2",
+      "precio": 15000,
+      "plazoDias": 3,
+      "detalle": "Incluye limpieza completa y tratamiento químico de pileta",
+      "ratingProveedorMock": 4.5,
+      "createdAt": "2025-11-10T09:00:00.000Z"
+    }
+  ],
+  "supplies": [
+    {
+      "id": "1",
+      "vendedorId": "3",
+      "nombre": "Cloro granulado",
+      "categoria": "Químicos",
+      "unidad": "kg",
+      "precioUnit": 450,
+      "stock": 100
+    },
+    {
+      "id": "2",
+      "vendedorId": "3",
+      "nombre": "Fertilizante orgánico",
+      "categoria": "Jardinería",
+      "unidad": "kg",
+      "precioUnit": 350,
+      "stock": 50
+    }
+  ],
+  "supplyOffers": [
+    {
+      "id": "1",
+      "serviceId": "1",
+      "vendedorId": "3",
+      "items": [
+        {
+          "supplyId": "1",
+          "cantidad": 5
+        },
+        {
+          "supplyId": "2",
+          "cantidad": 10
+        }
+      ],
+      "precioTotal": 5750,
+      "notas": "Entrega en 24hs",
+      "createdAt": "2025-11-10T10:00:00.000Z"
+    }
+  ]
+}
