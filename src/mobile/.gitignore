@@ -1,0 +1,27 @@
+# Node modules
+node_modules/
+
+# Lock files
+package-lock.json
+
+# Build outputs
+dist/
+build/
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# Environment
+.env
+.env.local
+
+# Local files we don't want in the repo (including the problematic reserved name)
+nul
+
+# Ignore the workspace-level generated folders
+.claude/
+
+# Optional: ignore large generated files
+npm-debug.log
+yarn-error.log
