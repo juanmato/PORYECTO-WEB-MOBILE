@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Service, Quote, Insumo, InsumoPack } from '../types';
 import { mockServices, mockQuotes, mockInsumos, mockInsumoPacks } from '../data/mockData';
@@ -100,6 +101,9 @@ const dataReducer = (state: DataState, action: DataAction): DataState => {
         insumoPacks: state.insumoPacks.filter(p => p.id !== action.payload)
       };
     default:
+      if (__DEV__) {
+        console.warn('Unknown action type in dataReducer:', action);
+      }
       return state;
   }
 };
@@ -112,15 +116,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
     insumoPacks: mockInsumoPacks,
   });
 
-  // Load data from AsyncStorage
+  // Flag to prevent saving during initial load
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Load data from AsyncStorage on mount
   useEffect(() => {
     loadData();
   }, []);
 
-  // Save data to AsyncStorage whenever state changes
+  // Save data to AsyncStorage whenever state changes (but NOT during initial load)
   useEffect(() => {
-    saveData();
-  }, [state.services, state.quotes, state.insumos, state.insumoPacks]);
+    if (isInitialized) {
+      saveData();
+    }
+  }, [state.services, state.quotes, state.insumos, state.insumoPacks, isInitialized]);
 
   const loadData = async () => {
     try {
@@ -129,23 +138,58 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const insumosJson = await AsyncStorage.getItem('insumos');
       const packsJson = await AsyncStorage.getItem('insumoPacks');
 
-      if (servicesJson) dispatch({ type: 'SET_SERVICES', payload: JSON.parse(servicesJson) });
-      if (quotesJson) dispatch({ type: 'SET_QUOTES', payload: JSON.parse(quotesJson) });
-      if (insumosJson) dispatch({ type: 'SET_INSUMOS', payload: JSON.parse(insumosJson) });
-      if (packsJson) dispatch({ type: 'SET_INSUMO_PACKS', payload: JSON.parse(packsJson) });
+      // Validate and parse data
+      try {
+        if (servicesJson) dispatch({ type: 'SET_SERVICES', payload: JSON.parse(servicesJson) });
+        if (quotesJson) dispatch({ type: 'SET_QUOTES', payload: JSON.parse(quotesJson) });
+        if (insumosJson) dispatch({ type: 'SET_INSUMOS', payload: JSON.parse(insumosJson) });
+        if (packsJson) dispatch({ type: 'SET_INSUMO_PACKS', payload: JSON.parse(packsJson) });
+      } catch (parseError) {
+        console.error('Error parsing stored data:', parseError);
+        Alert.alert(
+          'Error al cargar datos',
+          'Los datos guardados están corruptos. Se cargarán los datos predeterminados.',
+          [{ text: 'OK' }]
+        );
+        // Data will remain as mock data from initial state
+      }
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading data from storage:', error);
+      Alert.alert(
+        'Error de Almacenamiento',
+        'No se pudieron cargar los datos guardados. Se usarán datos predeterminados.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      // Mark as initialized after loading, allowing saves to happen
+      setIsInitialized(true);
     }
   };
 
   const saveData = async () => {
     try {
-      await AsyncStorage.setItem('services', JSON.stringify(state.services));
-      await AsyncStorage.setItem('quotes', JSON.stringify(state.quotes));
-      await AsyncStorage.setItem('insumos', JSON.stringify(state.insumos));
-      await AsyncStorage.setItem('insumoPacks', JSON.stringify(state.insumoPacks));
+      // Save all data items in parallel for better performance
+      await Promise.all([
+        AsyncStorage.setItem('services', JSON.stringify(state.services)),
+        AsyncStorage.setItem('quotes', JSON.stringify(state.quotes)),
+        AsyncStorage.setItem('insumos', JSON.stringify(state.insumos)),
+        AsyncStorage.setItem('insumoPacks', JSON.stringify(state.insumoPacks)),
+      ]);
     } catch (error) {
       console.error('Error saving data:', error);
+
+      // Show user-friendly error message
+      Alert.alert(
+        'Error al Guardar',
+        'No se pudieron guardar los cambios. Por favor, verifica el almacenamiento de tu dispositivo e intenta nuevamente.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Reintentar',
+            onPress: () => saveData(), // Retry saving
+          },
+        ]
+      );
     }
   };
 

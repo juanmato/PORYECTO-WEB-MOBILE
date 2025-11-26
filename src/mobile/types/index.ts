@@ -6,11 +6,16 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password: string;
   role: UserRole;
   avatar?: string;
   rating?: number;
   phone?: string;
+}
+
+// Separate interface for authentication credentials (never stored with user data)
+export interface AuthCredentials {
+  email: string;
+  password: string;
 }
 
 export interface Service {

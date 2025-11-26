@@ -12,8 +12,11 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
 import { Insumo } from '../types';
+import { NewInsumoScreenProps } from '../types/navigation';
+import { validateNumber } from '../utils/validation';
+import { generateInsumoId } from '../utils/idGenerator';
 
-export function NewInsumoScreen({ navigation }: any) {
+export function NewInsumoScreen({ navigation }: NewInsumoScreenProps) {
   const { user } = useAuth();
   const { addInsumo } = useData();
 
@@ -24,18 +27,32 @@ export function NewInsumoScreen({ navigation }: any) {
   const [stock, setStock] = useState('');
 
   const handleSubmit = () => {
-    if (!name || !category || !unit || !unitPrice || !stock) {
+    if (!name || name.trim() === '' || !category || category.trim() === '' || !unit || unit.trim() === '') {
       Alert.alert('Error', 'Por favor completa todos los campos');
       return;
     }
 
+    // Validate unit price
+    const priceValidation = validateNumber(unitPrice, 'El precio unitario', 1);
+    if (!priceValidation.isValid) {
+      Alert.alert('Error de Validación', priceValidation.error);
+      return;
+    }
+
+    // Validate stock
+    const stockValidation = validateNumber(stock, 'El stock', 0);
+    if (!stockValidation.isValid) {
+      Alert.alert('Error de Validación', stockValidation.error);
+      return;
+    }
+
     const newInsumo: Insumo = {
-      id: `ins-${Date.now()}`,
+      id: generateInsumoId(),
       name,
       category,
       unit,
-      unitPrice: parseInt(unitPrice),
-      stock: parseInt(stock),
+      unitPrice: priceValidation.value!,
+      stock: stockValidation.value!,
       providerId: user!.id,
     };
 

@@ -1,3 +1,6 @@
+// IMPORTANT: Must be imported first to polyfill crypto for uuid
+import 'react-native-get-random-values';
+
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

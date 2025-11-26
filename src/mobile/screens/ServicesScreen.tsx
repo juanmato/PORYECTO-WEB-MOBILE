@@ -11,8 +11,10 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
 import { Service } from '../types';
+import { ServicesScreenProps } from '../types/navigation';
+import { getStatusBadge } from '../utils/serviceHelpers';
 
-export function ServicesScreen({ navigation }: any) {
+export function ServicesScreen({ navigation }: ServicesScreenProps) {
   const { user } = useAuth();
   const { services } = useData();
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,23 +40,6 @@ export function ServicesScreen({ navigation }: any) {
     return true;
   });
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; color: string }> = {
-      publicado: { label: 'Publicado', color: Colors.info },
-      en_evaluacion: { label: 'En Evaluación', color: Colors.warning },
-      asignado: { label: 'Asignado', color: Colors.secondary },
-      completado: { label: 'Completado', color: Colors.success },
-      cancelado: { label: 'Cancelado', color: Colors.danger },
-    };
-
-    const config = statusConfig[status] || { label: status, color: Colors.gray400 };
-
-    return (
-      <View style={[styles.badge, { backgroundColor: config.color }]}>
-        <Text style={styles.badgeText}>{config.label}</Text>
-      </View>
-    );
-  };
 
   const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {

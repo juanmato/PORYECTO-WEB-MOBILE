@@ -9,8 +9,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
+import { DashboardScreenProps } from '../types/navigation';
 
-export function DashboardScreen({ navigation }: any) {
+export function DashboardScreen({ navigation }: DashboardScreenProps) {
   const { user, logout } = useAuth();
   const { services, quotes, insumos } = useData();
 

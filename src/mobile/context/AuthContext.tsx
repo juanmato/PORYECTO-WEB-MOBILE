@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../types';
-import { mockUsers } from '../data/mockData';
+import { mockUsers, mockCredentials } from '../data/mockData';
 
 interface AuthState {
   user: User | null;
@@ -58,14 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const user = mockUsers.find(u => u.email === email && u.password === password);
-    
-    if (user) {
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-      dispatch({ type: 'LOGIN', payload: user });
-      return true;
+    // Validate credentials against mockCredentials (separate from user data)
+    const validPassword = mockCredentials[email];
+
+    if (validPassword && validPassword === password) {
+      const user = mockUsers.find(u => u.email === email);
+
+      if (user) {
+        // Only store user data, NEVER store password
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        dispatch({ type: 'LOGIN', payload: user });
+        return true;
+      }
     }
-    
+
     return false;
   };
 

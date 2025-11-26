@@ -12,8 +12,11 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
 import { Quote } from '../types';
+import { NewQuoteScreenProps } from '../types/navigation';
+import { validateNumber } from '../utils/validation';
+import { generateQuoteId } from '../utils/idGenerator';
 
-export function NewQuoteScreen({ route, navigation }: any) {
+export function NewQuoteScreen({ route, navigation }: NewQuoteScreenProps) {
   const { serviceId, quoteId } = route.params;
   const { user } = useAuth();
   const { quotes, addQuote, updateQuote } = useData();
@@ -25,8 +28,22 @@ export function NewQuoteScreen({ route, navigation }: any) {
   const [details, setDetails] = useState(existingQuote?.details || '');
 
   const handleSubmit = () => {
-    if (!price || !deadline || !details) {
+    if (!details || details.trim() === '') {
       Alert.alert('Error', 'Por favor completa todos los campos');
+      return;
+    }
+
+    // Validate price
+    const priceValidation = validateNumber(price, 'El precio', 1);
+    if (!priceValidation.isValid) {
+      Alert.alert('Error de Validación', priceValidation.error);
+      return;
+    }
+
+    // Validate deadline
+    const deadlineValidation = validateNumber(deadline, 'El plazo en días', 1, 365);
+    if (!deadlineValidation.isValid) {
+      Alert.alert('Error de Validación', deadlineValidation.error);
       return;
     }
 
@@ -34,8 +51,8 @@ export function NewQuoteScreen({ route, navigation }: any) {
       // Update
       const updatedQuote: Quote = {
         ...existingQuote,
-        price: parseInt(price),
-        deadline: parseInt(deadline),
+        price: priceValidation.value!,
+        deadline: deadlineValidation.value!,
         details,
       };
       updateQuote(updatedQuote);
@@ -43,12 +60,12 @@ export function NewQuoteScreen({ route, navigation }: any) {
     } else {
       // Create
       const newQuote: Quote = {
-        id: `q-${Date.now()}`,
+        id: generateQuoteId(),
         serviceId,
         providerId: user!.id,
         providerName: user!.name,
-        price: parseInt(price),
-        deadline: parseInt(deadline),
+        price: priceValidation.value!,
+        deadline: deadlineValidation.value!,
         details,
         createdAt: new Date().toISOString(),
       };

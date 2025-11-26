@@ -12,8 +12,11 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
 import { Service } from '../types';
+import { NewServiceScreenProps } from '../types/navigation';
+import { validateDate } from '../utils/validation';
+import { generateServiceId } from '../utils/idGenerator';
 
-export function NewServiceScreen({ navigation }: any) {
+export function NewServiceScreen({ navigation }: NewServiceScreenProps) {
   const { user } = useAuth();
   const { addService } = useData();
   
@@ -25,13 +28,20 @@ export function NewServiceScreen({ navigation }: any) {
   const [preferredDate, setPreferredDate] = useState('');
 
   const handleSubmit = () => {
-    if (!title || !description || !address || !city || !preferredDate) {
+    if (!title || title.trim() === '' || !description || description.trim() === '' || !address || address.trim() === '' || !city || city.trim() === '') {
       Alert.alert('Error', 'Por favor completa todos los campos');
       return;
     }
 
+    // Validate preferred date
+    const dateValidation = validateDate(preferredDate);
+    if (!dateValidation.isValid) {
+      Alert.alert('Error de Validación', dateValidation.error);
+      return;
+    }
+
     const newService: Service = {
-      id: `srv-${Date.now()}`,
+      id: generateServiceId(),
       title,
       description,
       category,

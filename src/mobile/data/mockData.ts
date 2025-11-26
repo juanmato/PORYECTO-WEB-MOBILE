@@ -1,11 +1,10 @@
-import { User, Service, Quote, Insumo, InsumoPack } from '../types';
+import { User, Service, Quote, Insumo, InsumoPack, AuthCredentials } from '../types';
 
 export const mockUsers: User[] = [
   {
     id: '1',
     name: 'Juan Pérez',
     email: 'juan@solicitante.com',
-    password: '123',
     role: 'solicitante',
     phone: '+56 9 1234 5678'
   },
@@ -13,7 +12,6 @@ export const mockUsers: User[] = [
     id: '2',
     name: 'María González',
     email: 'maria@proveedor.com',
-    password: '123',
     role: 'proveedor_servicio',
     rating: 4.8,
     phone: '+56 9 8765 4321'
@@ -22,7 +20,6 @@ export const mockUsers: User[] = [
     id: '3',
     name: 'Carlos Rodríguez',
     email: 'carlos@insumos.com',
-    password: '123',
     role: 'proveedor_insumos',
     rating: 4.5,
     phone: '+56 9 5555 6666'
@@ -31,12 +28,20 @@ export const mockUsers: User[] = [
     id: '4',
     name: 'Ana Silva',
     email: 'ana@proveedor.com',
-    password: '123',
     role: 'proveedor_servicio',
     rating: 4.9,
     phone: '+56 9 7777 8888'
   }
 ];
+
+// Separate credentials storage - ONLY for development/testing
+// In production, this would be replaced with proper API authentication
+export const mockCredentials: Record<string, string> = {
+  'juan@solicitante.com': '123',
+  'maria@proveedor.com': '123',
+  'carlos@insumos.com': '123',
+  'ana@proveedor.com': '123',
+};
 
 export const mockServices: Service[] = [
   {

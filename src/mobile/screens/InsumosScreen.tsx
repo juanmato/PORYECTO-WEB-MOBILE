@@ -10,8 +10,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
+import { InsumosScreenProps } from '../types/navigation';
 
-export function InsumosScreen({ navigation }: any) {
+export function InsumosScreen({ navigation }: InsumosScreenProps) {
   const { user } = useAuth();
   const { insumos, deleteInsumo } = useData();
 

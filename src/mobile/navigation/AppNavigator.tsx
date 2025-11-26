@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Colors } from '../constants/Colors';
+import { RootStackParamList, MainTabParamList } from '../types/navigation';
 
 // Screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -17,8 +18,8 @@ import { MyQuotesScreen } from '../screens/MyQuotesScreen';
 import { InsumosScreen } from '../screens/InsumosScreen';
 import { NewInsumoScreen } from '../screens/NewInsumoScreen';
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function MainTabs() {
   const { user } = useAuth();

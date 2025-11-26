@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Colors } from '../constants/Colors';
+import { LoginScreenProps } from '../types/navigation';
 
-export function LoginScreen() {
+export function LoginScreen({}: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();

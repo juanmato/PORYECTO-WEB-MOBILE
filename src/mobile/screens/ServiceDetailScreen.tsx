@@ -10,8 +10,10 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
+import { ServiceDetailScreenProps } from '../types/navigation';
+import { getStatusBadge } from '../utils/serviceHelpers';
 
-export function ServiceDetailScreen({ route, navigation }: any) {
+export function ServiceDetailScreen({ route, navigation }: ServiceDetailScreenProps) {
   const { serviceId } = route.params;
   const { user } = useAuth();
   const { services, quotes, selectQuote, deleteQuote, completeService, cancelService } = useData();
@@ -45,22 +47,23 @@ export function ServiceDetailScreen({ route, navigation }: any) {
   };
 
   const handleCompleteService = () => {
-    Alert.prompt(
-      'Calificar Servicio',
-      'Ingresa tu calificación (1-5) y comentario:',
+    // Note: Alert.prompt is iOS-only. For a production app, use a custom modal
+    // or navigate to a dedicated rating screen for cross-platform support.
+    // Using simple confirmation for now to ensure Android compatibility.
+    Alert.alert(
+      'Completar Servicio',
+      '¿Deseas marcar este servicio como completado? Se asignará una calificación predeterminada de 5 estrellas.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Completar',
-          onPress: (text) => {
-            completeService(serviceId, 5, text || 'Excelente servicio');
+          onPress: () => {
+            completeService(serviceId, 5, 'Servicio completado exitosamente');
             Alert.alert('Éxito', 'Servicio completado y calificado');
             navigation.goBack();
           },
         },
-      ],
-      'plain-text',
-      'Excelente servicio'
+      ]
     );
   };
 
@@ -83,23 +86,6 @@ export function ServiceDetailScreen({ route, navigation }: any) {
     );
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; color: string }> = {
-      publicado: { label: 'Publicado', color: Colors.info },
-      en_evaluacion: { label: 'En Evaluación', color: Colors.warning },
-      asignado: { label: 'Asignado', color: Colors.secondary },
-      completado: { label: 'Completado', color: Colors.success },
-      cancelado: { label: 'Cancelado', color: Colors.danger },
-    };
-
-    const config = statusConfig[status] || { label: status, color: Colors.gray400 };
-
-    return (
-      <View style={[styles.badge, { backgroundColor: config.color }]}>
-        <Text style={styles.badgeText}>{config.label}</Text>
-      </View>
-    );
-  };
 
   return (
     <ScrollView style={styles.container}>

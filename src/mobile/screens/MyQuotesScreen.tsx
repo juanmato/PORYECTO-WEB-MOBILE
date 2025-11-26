@@ -10,8 +10,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { Colors } from '../constants/Colors';
+import { MyQuotesScreenProps } from '../types/navigation';
 
-export function MyQuotesScreen({ navigation }: any) {
+export function MyQuotesScreen({ navigation }: MyQuotesScreenProps) {
   const { user } = useAuth();
   const { quotes, services, deleteQuote } = useData();
 
